@@ -33,18 +33,29 @@ jobs:
 
       - name: Terraform fmt
         run: terraform fmt -check -recursive
+        working-directory: .
+
+      - name: Show files
+          run: |
+            pwd
+            ls -la
+            find . -maxdepth 3 -name "*.tf" -print
 
       - name: Terraform init
         run: terraform init
+        working-directory: .        
 
       - name: Terraform state list
         run: terraform state list
+        working-directory: .        
 
       - name: Terraform validate
         run: terraform validate
+        working-directory: .        
 
       - name: Terraform plan
         run: terraform plan -out=tfplan
+        working-directory: .        
 
       # - name: Terraform apply
       #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
