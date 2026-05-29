@@ -95,3 +95,42 @@ resource "aws_lb_target_group" "uat" {
     unhealthy_threshold = 2
   }
 }
+
+resource "aws_ecs_service" "dev" {
+  name            = "diogenes-web-service"
+  cluster         = aws_ecs_cluster.dev.id
+  task_definition = "diogenes-web-task:6"
+  desired_count   = 1
+
+  launch_type                       = "FARGATE"
+  availability_zone_rebalancing     = "ENABLED"
+  enable_ecs_managed_tags           = true
+  enable_execute_command            = false
+  health_check_grace_period_seconds = 0
+  wait_for_steady_state             = false
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.dev.arn
+    container_name   = "diogenes-web"
+    container_port   = 8080
+  }
+
+  network_configuration {
+    assign_public_ip = true
+
+    security_groups = [
+      aws_security_group.dev_service.id
+    ]
+
+    subnets = [
+      "subnet-0687e53a7a15cb484",
+      "subnet-08f86d45a77a83b12",
+      "subnet-09d0573b5e1cd2e80"
+    ]
+  }
+}
