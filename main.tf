@@ -61,3 +61,37 @@ resource "aws_security_group" "dev_service" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+resource "aws_lb_target_group" "dev" {
+  name        = "diogenes-web-targets"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = "vpc-0f662ffab3ecc56a9"
+
+  health_check {
+    enabled             = true
+    protocol            = "HTTP"
+    path                = "/health"
+    matcher             = "200"
+  }
+}
+
+resource "aws_lb_target_group" "uat" {
+  name        = "diogenes-web-uat-tg"
+  port        = 8080
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = "vpc-0f662ffab3ecc56a9"
+
+  health_check {
+    enabled             = true
+    protocol            = "HTTP"
+    path                = "/health"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+  }
+}

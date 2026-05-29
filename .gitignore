@@ -6,5 +6,6 @@ obj/
 .terraform/
 *.tfstate
 *.tfstate.*
+*.tfplan
 crash.log
 *.tfvars
