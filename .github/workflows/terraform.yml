@@ -58,8 +58,6 @@ jobs:
       - name: Terraform plan
         run: terraform plan -out=tfplan
 
-      # Uncomment after backend/state issue is confirmed fixed
-      #
-      # - name: Terraform apply
-      #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      #   run: terraform apply -auto-approve tfplan
+      - name: Terraform apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve tfplan
