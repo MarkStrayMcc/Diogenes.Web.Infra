@@ -70,10 +70,10 @@ resource "aws_lb_target_group" "dev" {
   vpc_id      = "vpc-0f662ffab3ecc56a9"
 
   health_check {
-    enabled             = true
-    protocol            = "HTTP"
-    path                = "/health"
-    matcher             = "200"
+    enabled  = true
+    protocol = "HTTP"
+    path     = "/health"
+    matcher  = "200"
   }
 }
 
