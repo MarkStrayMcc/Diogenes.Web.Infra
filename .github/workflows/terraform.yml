@@ -37,12 +37,15 @@ jobs:
       - name: Terraform init
         run: terraform init
 
+      - name: Terraform state list
+        run: terraform state list
+
       - name: Terraform validate
         run: terraform validate
 
       - name: Terraform plan
         run: terraform plan -out=tfplan
 
-      - name: Terraform apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve tfplan
+      # - name: Terraform apply
+      #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      #   run: terraform apply -auto-approve tfplan
