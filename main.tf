@@ -22,6 +22,67 @@ resource "aws_ecr_repository" "diogenes_web" {
   name = "diogenes-web"
 }
 
+resource "aws_cloudwatch_log_group" "dev" {
+  name              = "/ecs/diogenes-web-dev"
+  retention_in_days = 14
+
+  tags = {
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
+}
+
+resource "aws_ecs_task_definition" "dev" {
+  family                   = "diogenes-web-task"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "512"
+  memory                   = "1024"
+  execution_role_arn       = "arn:aws:iam::707714592196:role/ecsTaskExecutionRole"
+
+  container_definitions = jsonencode([
+    {
+      name      = "diogenes-web"
+      image     = "707714592196.dkr.ecr.eu-west-2.amazonaws.com/diogenes-web:618bc646b5138514142eb8ff4d0856f3f8dd4ea6"
+      cpu       = 512
+      memory    = 1024
+      essential = true
+
+      portMappings = [
+        {
+          name          = "diogenes-web-8080-tcp"
+          containerPort = 8080
+          hostPort      = 8080
+          protocol      = "tcp"
+          appProtocol   = "http"
+        }
+      ]
+
+      environment = [
+        {
+          name  = "ASPNETCORE_URLS"
+          value = "http://+:8080"
+        }
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.dev.name
+          awslogs-region        = "eu-west-2"
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+    }
+  ])
+
+  runtime_platform {
+    cpu_architecture        = "X86_64"
+    operating_system_family = "LINUX"
+  }
+}
+
 resource "aws_security_group" "alb" {
   name        = "diogenes-alb-sg"
   description = "Diogenes LB SG"
@@ -99,7 +160,7 @@ resource "aws_lb_target_group" "uat" {
 resource "aws_ecs_service" "dev" {
   name            = "diogenes-web-service"
   cluster         = aws_ecs_cluster.dev.id
-  task_definition = "diogenes-web-task:6"
+  task_definition = aws_ecs_task_definition.dev.arn
   desired_count   = 1
 
   launch_type                       = "FARGATE"
