@@ -22,7 +22,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: .
+        working-directory: environments/dev
 
     steps:
       - name: Checkout
@@ -41,7 +41,7 @@ jobs:
         run: |
           pwd
           ls -la
-          find . -maxdepth 3 -name "*.tf" -print
+          find ../.. -maxdepth 4 -name "*.tf" -print
 
       - name: Terraform fmt
         run: terraform fmt -check -recursive

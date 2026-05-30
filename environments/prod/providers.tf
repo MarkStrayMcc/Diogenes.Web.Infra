@@ -3,7 +3,7 @@ terraform {
 
   backend "s3" {
     bucket         = "diogenes-terraform-state"
-    key            = "diogenes-web/dev/terraform.tfstate"
+    key            = "diogenes-web/prod/terraform.tfstate"
     region         = "eu-west-2"
     dynamodb_table = "diogenes-terraform-locks"
     encrypt        = true
@@ -18,5 +18,5 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region = "eu-west-2"
 }
