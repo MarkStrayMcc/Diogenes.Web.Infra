@@ -3,7 +3,7 @@ terraform {
     bucket         = "diogenes-terraform-state"
     key            = "diogenes-web/dev/terraform.tfstate"
     region         = "eu-west-2"
-    dynamodb_table = "diogenes-terraform-locks"
+    use_lockfile   = true
     encrypt        = true
   }
 }
