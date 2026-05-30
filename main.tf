@@ -195,3 +195,40 @@ resource "aws_ecs_service" "dev" {
     ]
   }
 }
+
+resource "aws_lb" "dev" {
+  name               = "diogenes-web-alb"
+  load_balancer_type = "application"
+  internal           = false
+  security_groups    = [aws_security_group.alb.id]
+
+  subnets = [
+    "subnet-0687e53a7a15cb484",
+    "subnet-08f86d45a77a83b12",
+    "subnet-09d0573b5e1cd2e80"
+  ]
+
+  ip_address_type = "ipv4"
+}
+
+resource "aws_lb_listener" "dev_http" {
+  load_balancer_arn = aws_lb.dev.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "forward"
+
+    forward {
+      target_group {
+        arn    = aws_lb_target_group.dev.arn
+        weight = 1
+      }
+
+      stickiness {
+        enabled  = false
+        duration = 1
+      }
+    }
+  }
+}
